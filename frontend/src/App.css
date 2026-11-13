@@ -1,0 +1,317 @@
+.app-shell {
+  min-height: 100vh;
+  background: #f7f5ef;
+  color: #263128;
+}
+
+.app-main {
+  min-height: 100vh;
+  margin-left: 264px;
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  border-bottom: 1px solid rgba(156, 175, 136, 0.28);
+  background: rgba(247, 245, 239, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.topbar-page-name {
+  color: #263128;
+  font: 700 13px "Manrope", sans-serif;
+}
+
+.topbar-location {
+  color: #788174;
+  font-size: 11px;
+}
+
+.menu-toggle {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(156, 175, 136, 0.42);
+  border-radius: 11px;
+  background: #f7f5ef;
+  color: #e8412c;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(232, 65, 44, 0.12);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.menu-toggle:hover {
+  transform: translateY(-2px);
+  background: #fff;
+  box-shadow: 0 8px 19px rgba(232, 65, 44, 0.2);
+}
+
+.app-content {
+  width: min(100%, 1220px);
+  margin: 0 auto;
+  padding: 30px 34px 44px;
+}
+
+.page-placeholder {
+  min-height: 300px;
+  padding: 30px;
+  border: 1px solid rgba(156, 175, 136, 0.3);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 35px rgba(53, 66, 47, 0.07);
+}
+
+.page-placeholder h1 {
+  margin: 0 0 10px;
+  color: #263128;
+  font: 800 30px "Manrope", sans-serif;
+}
+
+.page-placeholder > p:last-child {
+  color: #788174;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.topbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #788174;
+  font-size: 11px;
+}
+
+.topbar-auth button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(156, 175, 136, 0.45);
+  border-radius: 10px;
+  background: #fff;
+  color: #596b4e;
+  font: 700 10px "DM Sans", sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.topbar-auth button:hover {
+  transform: translateY(-1px);
+  border-color: #e8412c;
+  background: #fff8f6;
+  color: #d63a27;
+  box-shadow: 0 5px 14px rgba(232, 65, 44, 0.13);
+}
+
+.topbar-auth button:last-child {
+  border-color: #e8412c;
+  background: #e8412c;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(232, 65, 44, 0.22);
+}
+
+.topbar-auth button:last-child:hover {
+  border-color: #cf3523;
+  background: #cf3523;
+  box-shadow: 0 9px 20px rgba(232, 65, 44, 0.3);
+}
+
+.map-access-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(38, 49, 40, 0.62);
+  backdrop-filter: blur(5px);
+  animation: map-overlay-in 180ms ease both;
+}
+
+.map-access-card {
+  position: relative;
+  width: min(100%, 390px);
+  padding: 29px;
+  border: 1px solid rgba(156, 175, 136, 0.38);
+  border-radius: 22px;
+  background: #f7f5ef;
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.24),
+    0 0 0 4px rgba(232, 65, 44, 0.1);
+  animation: map-card-in 220ms ease both;
+}
+
+.map-access-card h2 {
+  margin: 0 32px 8px 0;
+  color: #263128;
+  font: 700 20px "Manrope", sans-serif;
+}
+
+.map-access-card p {
+  margin: 0 0 18px;
+  color: #788174;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.map-access-card > a {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 1px solid #e8412c;
+  border-radius: 10px;
+  background: #e8412c;
+  color: #fff;
+  font: 700 11px "DM Sans", sans-serif;
+  text-decoration: none;
+  box-shadow: 0 7px 18px rgba(232, 65, 44, 0.24);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.map-access-card > a:hover {
+  transform: translateY(-2px);
+  background: #cf3523;
+  box-shadow: 0 10px 23px rgba(232, 65, 44, 0.32);
+}
+
+.map-access-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(156, 175, 136, 0.32);
+  border-radius: 50%;
+  background: #fff;
+  color: #596b4e;
+  font-size: 20px;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.map-access-close:hover {
+  transform: rotate(90deg);
+  border-color: rgba(232, 65, 44, 0.4);
+  color: #e8412c;
+  box-shadow: 0 4px 12px rgba(232, 65, 44, 0.13);
+}
+
+@keyframes map-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes map-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-main {
+    margin-left: 0;
+  }
+
+  .app-topbar {
+    height: 60px;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 17px;
+  }
+
+  .menu-toggle {
+    display: inline-grid;
+    flex: 0 0 38px;
+    place-items: center;
+  }
+
+  .topbar-location {
+    margin-left: auto;
+    font-size: 10px;
+  }
+
+  .app-content {
+    padding: 22px 17px 34px;
+  }
+
+  .topbar-auth {
+    gap: 5px;
+  }
+
+  .topbar-auth > span {
+    display: none;
+  }
+
+  .topbar-auth button {
+    min-height: 33px;
+    padding: 0 9px;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar-location {
+    font-size: 0;
+  }
+
+  .topbar-location:first-letter {
+    font-size: 15px;
+  }
+
+  .topbar-page-name {
+    font-size: 12px;
+  }
+
+  .page-placeholder {
+    padding: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-toggle,
+  .topbar-auth button,
+  .map-access-overlay,
+  .map-access-card,
+  .map-access-card > a,
+  .map-access-close {
+    animation: none;
+    transition: none;
+  }
+}
+
+.topbar-location {
+  display: none !important;
+}

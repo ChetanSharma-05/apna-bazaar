@@ -1,0 +1,364 @@
+.compare-page {
+  display: grid;
+  gap: 20px;
+  color: #263128;
+  animation: compare-enter 350ms ease both;
+}
+
+@keyframes compare-enter {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.compare-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.compare-kicker {
+  margin: 0 0 7px;
+  color: #758a62;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.35px;
+}
+
+.compare-page-heading h1 {
+  margin: 0;
+  color: #263128;
+  font: 800 clamp(25px, 3vw, 34px)/1.2 "Manrope", sans-serif;
+  letter-spacing: -1px;
+}
+
+.compare-page-heading > div > p:last-child {
+  margin: 7px 0 0;
+  color: #788174;
+  font-size: 12px;
+}
+
+.compare-item-select {
+  display: grid;
+  min-width: 190px;
+  gap: 6px;
+  color: #788174;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.compare-item-select select {
+  padding: 11px 12px;
+  border: 1px solid rgba(156, 175, 136, 0.45);
+  border-radius: 11px;
+  outline: 0;
+  background: #fff;
+  color: #394635;
+  font-size: 12px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.compare-item-select select:focus {
+  border-color: #e8412c;
+  box-shadow: 0 0 0 3px rgba(232, 65, 44, 0.12);
+}
+
+.compare-highlight {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid rgba(156, 175, 136, 0.38);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 95% 8%, rgba(232, 65, 44, 0.12), transparent 42%),
+    linear-gradient(115deg, #e8ede2, #f7f5ef 72%);
+  box-shadow: 0 12px 28px rgba(232, 65, 44, 0.08);
+}
+
+.compare-deal-tag {
+  display: inline-block;
+  padding: 6px 9px;
+  border: 1px solid rgba(232, 65, 44, 0.18);
+  border-radius: 20px;
+  background: rgba(232, 65, 44, 0.09);
+  color: #cf3523;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+
+.compare-highlight h2 {
+  margin: 12px 0 5px;
+  color: #263128;
+  font: 700 22px "Manrope", sans-serif;
+}
+
+.compare-highlight p {
+  margin: 0;
+  color: #788174;
+  font-size: 11px;
+}
+
+.compare-highlight > strong {
+  color: #596b4e;
+  font: 800 29px "Manrope", sans-serif;
+  white-space: nowrap;
+}
+
+.compare-highlight > strong small {
+  color: #788174;
+  font: 500 10px "DM Sans", sans-serif;
+}
+
+.compare-highlight-map {
+  display: inline-block;
+  margin-top: 10px;
+  color: #cf3523;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.compare-highlight-map:hover,
+.offer-map-link:hover {
+  color: #b92e20;
+  text-decoration: underline;
+}
+
+.compare-offers {
+  padding: 21px;
+  border: 1px solid rgba(156, 175, 136, 0.32);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(53, 66, 47, 0.06);
+}
+
+.compare-offers-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.compare-offers-heading h2 {
+  margin: 0;
+  color: #263128;
+  font: 700 18px "Manrope", sans-serif;
+}
+
+.compare-offers-heading > span {
+  color: #788174;
+  font-size: 10px;
+}
+
+.offer-list {
+  display: grid;
+}
+
+.offer-row {
+  padding: 15px 0 13px;
+  border-top: 1px solid rgba(156, 175, 136, 0.24);
+}
+
+.offer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.offer-rank {
+  color: #788174;
+  font: 700 10px "Manrope", sans-serif;
+}
+
+.offer-shop {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+}
+
+.offer-shop strong {
+  overflow: hidden;
+  color: #394635;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.offer-shop small {
+  color: #788174;
+  font-size: 9px;
+}
+
+.offer-map-link {
+  width: fit-content;
+  color: #cf3523;
+  font-size: 9px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.best-badge {
+  padding: 5px 8px;
+  border: 1px solid rgba(156, 175, 136, 0.38);
+  border-radius: 20px;
+  background: #e8ede2;
+  color: #596b4e;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.offer-price {
+  color: #596b4e;
+  font: 700 14px "Manrope", sans-serif;
+  white-space: nowrap;
+}
+
+.offer-price small {
+  color: #788174;
+  font: 500 9px "DM Sans", sans-serif;
+}
+
+.offer-track {
+  height: 6px;
+  margin: 11px 0 0 34px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #f0f1eb;
+}
+
+.offer-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9caf88, #758a62);
+  transition: width 350ms ease;
+}
+
+.offer-best .offer-track span {
+  background: linear-gradient(90deg, #e8412c, #f08a70);
+}
+
+.compare-savings {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 16px;
+  border: 1px solid rgba(232, 65, 44, 0.2);
+  border-radius: 14px;
+  background: #f7f5ef;
+  box-shadow: 0 7px 18px rgba(232, 65, 44, 0.07);
+}
+
+.compare-savings > span {
+  color: #e8412c;
+  font-size: 19px;
+}
+
+.compare-savings p {
+  margin: 0;
+  color: #788174;
+  font-size: 11px;
+}
+
+.compare-savings strong {
+  color: #cf3523;
+}
+
+.compare-empty {
+  padding: 48px 18px;
+  border: 1px dashed rgba(156, 175, 136, 0.55);
+  border-radius: 17px;
+  background: #fff;
+  text-align: center;
+}
+
+.compare-empty > span {
+  color: #9caf88;
+  font-size: 30px;
+}
+
+.compare-empty h2 {
+  margin: 10px 0 6px;
+  color: #263128;
+  font: 700 18px "Manrope", sans-serif;
+}
+
+.compare-empty p {
+  margin-bottom: 15px;
+  color: #788174;
+  font-size: 11px;
+}
+
+.compare-empty button {
+  padding: 10px 14px;
+  border: 1px solid #e8412c;
+  border-radius: 10px;
+  background: #e8412c;
+  color: #fff;
+  font: 700 11px "DM Sans", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(232, 65, 44, 0.22);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.compare-empty button:hover {
+  transform: translateY(-2px);
+  border-color: #cf3523;
+  background: #cf3523;
+  box-shadow: 0 9px 20px rgba(232, 65, 44, 0.3);
+}
+
+@media (max-width: 560px) {
+  .compare-page-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .compare-item-select {
+    min-width: 0;
+  }
+
+  .compare-highlight {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 19px;
+  }
+
+  .compare-offers {
+    padding: 17px 13px;
+  }
+
+  .offer-info {
+    gap: 8px;
+  }
+
+  .offer-shop small {
+    max-width: 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compare-page,
+  .offer-track span,
+  .compare-empty button {
+    animation: none;
+    transition: none;
+  }
+}
