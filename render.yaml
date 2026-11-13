@@ -3,6 +3,7 @@ services:
     name: apna-bazaar
     runtime: docker
     plan: free
+    region: singapore
     healthCheckPath: /api/health/
     envVars:
       - key: DJANGO_SECRET_KEY
