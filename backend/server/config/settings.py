@@ -76,14 +76,23 @@ FRONTEND_URL = os.getenv(
     "FRONTEND_URL", f"https://{_render_host}" if _render_host else "http://localhost:5173"
 ).rstrip("/")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Apna Bazaar <onboarding@resend.dev>")
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+
 MAILERS = {
     "default": {
-        "BACKEND": "anymail.backends.resend.EmailBackend" if RESEND_API_KEY
-            else "django.core.mail.backends.console.EmailBackend",
-        "OPTIONS": {"api_key": RESEND_API_KEY} if RESEND_API_KEY else {},
+        "BACKEND": (
+            "anymail.backends.brevo.EmailBackend"
+            if BREVO_API_KEY
+            else "django.core.mail.backends.console.EmailBackend"
+        ),
+        "OPTIONS": {},
     },
 }
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "Apna Bazaar <noreply@example.com>",
+)
 
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv(
     "CSRF_TRUSTED_ORIGINS", "http://localhost:5173"

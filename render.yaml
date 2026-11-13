@@ -18,7 +18,7 @@ services:
         sync: false
       - key: CLOUDINARY_URL
         sync: false
-      - key: RESEND_API_KEY
+      - key: BREVO_API_KEY
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false

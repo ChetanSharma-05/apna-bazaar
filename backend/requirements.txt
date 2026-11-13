@@ -1,5 +1,5 @@
 Django>=6.1,<6.2
-django-anymail[resend]>=15.1,<16
+django-anymail>=15.1,<16
 django-cloudinary-storage>=0.3,<1
 dj-database-url>=2.3,<4
 gunicorn>=23,<24
