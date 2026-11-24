@@ -7,7 +7,7 @@ import SharePrice from "./SharePrice";
 import AuthPage from "./AuthPage";
 import AdminDashboard from "./AdminDashboard";
 import "./App.css";
-
+import MobileNav from "./MobileNav";
 const pageTitles = {
   dashboard: "Dashboard",
   prices: "Market prices",
@@ -306,6 +306,12 @@ function App() {
 
           {activePage === "admin" && user?.is_admin && <AdminDashboard />}
         </div>
+
+        <MobileNav
+  activePage={activePage}
+  onNavigate={navigateTo}
+  isAdmin={Boolean(user?.is_admin)}
+/>
 
         {mapDestination && (
           <div

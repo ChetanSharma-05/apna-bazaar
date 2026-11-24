@@ -18,6 +18,7 @@ function MobileNav({ activePage, onNavigate, isAdmin }) {
     <nav className="mobile-nav" aria-label="Mobile navigation">
       {visiblePages.map((page) => {
         const active = activePage === page.id;
+
         return (
           <button
             key={page.id}
@@ -26,7 +27,9 @@ function MobileNav({ activePage, onNavigate, isAdmin }) {
             onClick={() => onNavigate(page.id)}
             aria-current={active ? "page" : undefined}
           >
-            <span className="mobile-nav-icon" aria-hidden="true">{page.icon}</span>
+            <span className="mobile-nav-icon" aria-hidden="true">
+              {page.icon}
+            </span>
             <span className="mobile-nav-label">{page.label}</span>
           </button>
         );

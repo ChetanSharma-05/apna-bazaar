@@ -315,3 +315,14 @@
 .topbar-location {
   display: none !important;
 }
+
+
+@media (max-width: 760px) {
+  .menu-toggle {
+    display: none !important;
+  }
+
+  .app-content {
+    padding-bottom: 104px;
+  }
+}
