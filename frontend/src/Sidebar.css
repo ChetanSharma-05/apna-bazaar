@@ -275,25 +275,7 @@
 
 @media (max-width: 760px) {
   .sidebar {
-    transform: translateX(-100%);
-    transition:
-      transform 240ms ease,
-      box-shadow 240ms ease;
-    box-shadow: 16px 0 42px rgba(22, 37, 27, 0.2);
-  }
-
-  .sidebar.sidebar-open {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay.visible {
-    position: fixed;
-    inset: 0;
-    z-index: 40;
-    display: block;
-    border: 0;
-    background: rgba(22, 37, 27, 0.42);
-    backdrop-filter: blur(3px);
+    display: none;
   }
 }
 

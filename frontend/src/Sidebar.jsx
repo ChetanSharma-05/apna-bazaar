@@ -14,7 +14,7 @@ const adminPage = {
   label: "Admin dashboard",
 };
 
-function Sidebar({ activePage, onNavigate, isOpen, onClose, isAdmin }) {
+function Sidebar({ activePage, onNavigate, isAdmin }) {
   const [area, setArea] = useState("Use my location");
   const [city, setCity] = useState("Tap to find your area");
   const [locating, setLocating] = useState(false);
@@ -110,19 +110,10 @@ function Sidebar({ activePage, onNavigate, isOpen, onClose, isAdmin }) {
 
   function handleNavigate(pageId) {
     onNavigate(pageId);
-    onClose();
   }
 
   return (
-    <>
-      <button
-        className={`sidebar-overlay ${isOpen ? "visible" : ""}`}
-        type="button"
-        onClick={onClose}
-        aria-label="Close navigation"
-      />
-
-      <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+      <aside className="sidebar">
         <a
           className="sidebar-brand"
           href="#dashboard"
@@ -196,7 +187,6 @@ function Sidebar({ activePage, onNavigate, isOpen, onClose, isAdmin }) {
           <span className="profile-menu">···</span>
         </div>
       </aside>
-    </>
   );
 }
 

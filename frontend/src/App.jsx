@@ -231,7 +231,7 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="app-loading">Apna Bazaar load ho raha hai…</div>;
+    return <div className="app-loading">Loading</div>;
   }
 
   return (
