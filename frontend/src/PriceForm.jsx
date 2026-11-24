@@ -66,9 +66,15 @@ function PriceForm({ onCreated }) {
 
     const formElement = event.currentTarget;
     const formData = new FormData(formElement);
+    const selectedUnit =
+      unitChoice === "Other"
+        ? String(formData.get("unit_custom") || "").trim()
+        : unitChoice;
 
     formData.set("latitude", String(location.latitude));
     formData.set("longitude", String(location.longitude));
+    // Keep the legacy field for deployments that still read `unit` directly.
+    formData.set("unit", selectedUnit);
 
     if (photoFiles.product_image) {
       formData.set("product_image", photoFiles.product_image);

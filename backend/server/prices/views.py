@@ -117,7 +117,7 @@ def price_list(request):
 
             if category == "Other":
                 if not custom_category or len(custom_category) > 50:
-                    raise ValueError("Enter a category name.")
+                    raise ValueError("Enter a valid category name.")
             else:
                 custom_category = ""
 
@@ -129,7 +129,11 @@ def price_list(request):
             else:
                 unit = request.POST.get("unit", "kg").strip()
 
-            price = Decimal(request.POST.get("price", ""))
+            try:
+                price = Decimal(request.POST.get("price", ""))
+            except (InvalidOperation, TypeError):
+                raise ValueError("Enter a valid price.")
+
             shop_name = request.POST.get("shop_name", "").strip()
             area = request.POST.get("area", "Indiranagar").strip()
             date = parse_date(request.POST.get("date", ""))
@@ -138,8 +142,11 @@ def price_list(request):
             raw_longitude = request.POST.get("longitude")
 
             if raw_latitude and raw_longitude:
-                latitude = Decimal(raw_latitude)
-                longitude = Decimal(raw_longitude)
+                try:
+                    latitude = Decimal(raw_latitude)
+                    longitude = Decimal(raw_longitude)
+                except (InvalidOperation, TypeError):
+                    raise ValueError("Select the shop location on the map.")
 
                 if not (-90 <= latitude <= 90):
                     raise ValueError("Invalid latitude.")
@@ -151,17 +158,20 @@ def price_list(request):
                 latitude = None
                 longitude = None
 
-            if (
-                not item_name
-                or not shop_name
-                or not area
-                or not unit
-                or len(unit) > 20
-                or price <= 0
-                or date is None
-                or category not in dict(PriceEntry.CATEGORY_CHOICES)
-            ):
-                raise ValueError("Invalid price details.")
+            if not item_name:
+                raise ValueError("Enter the item name.")
+            if not shop_name:
+                raise ValueError("Enter the shop name.")
+            if not area:
+                raise ValueError("Enter the area.")
+            if not unit or len(unit) > 20:
+                raise ValueError("Choose or enter a valid unit.")
+            if not price.is_finite() or price <= 0:
+                raise ValueError("Enter a price greater than zero.")
+            if date is None:
+                raise ValueError("Choose a valid price date.")
+            if category not in dict(PriceEntry.CATEGORY_CHOICES):
+                raise ValueError("Choose a valid category.")
 
             product_image = request.FILES.get("product_image")
             shop_image = request.FILES.get("shop_image")
@@ -185,9 +195,9 @@ def price_list(request):
                 shop_image=shop_image,
             )
 
-        except (InvalidOperation, ValueError, TypeError):
+        except (ValueError, TypeError) as error:
             return JsonResponse(
-                {"error": "Item, category, unit, price, ya date check karo."},
+                {"error": str(error) or "Please check the price details."},
                 status=400,
             )
 
