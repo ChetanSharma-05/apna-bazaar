@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "./Sidebar";
+import MobileNav from "./MobileNav";
 import Dashboard from "./Dashboard";
 import MarketPrices from "./MarketPrices";
 import CompareShops from "./CompareShops";
@@ -7,7 +8,9 @@ import SharePrice from "./SharePrice";
 import AuthPage from "./AuthPage";
 import AdminDashboard from "./AdminDashboard";
 import "./App.css";
-import MobileNav from "./MobileNav";
+
+const PAGE_HISTORY_KEY = "apnaBazaarPage";
+
 const pageTitles = {
   dashboard: "Dashboard",
   prices: "Market prices",
@@ -27,15 +30,52 @@ function getResetRoute() {
 function App() {
   const resetRoute = useMemo(() => getResetRoute(), []);
   const [activePage, setActivePage] = useState(
-    resetRoute ? "auth" : "dashboard",
+    resetRoute
+      ? "auth"
+      : window.history.state?.[PAGE_HISTORY_KEY] || "dashboard",
   );
   const [authMode, setAuthMode] = useState(resetRoute ? "reset" : "login");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [prices, setPrices] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [mapDestination, setMapDestination] = useState(null);
+
+  useEffect(() => {
+    const currentState = window.history.state || {};
+
+    if (currentState[PAGE_HISTORY_KEY] !== activePage) {
+      window.history.replaceState(
+        { ...currentState, [PAGE_HISTORY_KEY]: activePage },
+        "",
+        window.location.href,
+      );
+    }
+
+    function handleBrowserBack(event) {
+      setActivePage(event.state?.[PAGE_HISTORY_KEY] || "dashboard");
+    }
+
+    window.addEventListener("popstate", handleBrowserBack);
+    return () => window.removeEventListener("popstate", handleBrowserBack);
+  }, [activePage]);
+
+  function transitionToPage(page, { replace = false, url } = {}) {
+    if (page === activePage && !replace && !url) return;
+
+    const nextState = {
+      ...(window.history.state || {}),
+      [PAGE_HISTORY_KEY]: page,
+    };
+    const method = replace ? "replaceState" : "pushState";
+
+    window.history[method](
+      nextState,
+      "",
+      url || window.location.href,
+    );
+    setActivePage(page);
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -95,18 +135,20 @@ function App() {
 
   function openAuth(mode = "login") {
     setAuthMode(mode);
-    setActivePage("auth");
-    setSidebarOpen(false);
+    transitionToPage("auth");
     setMapDestination(null);
   }
 
   function changeAuthMode(mode) {
     if (resetRoute) {
-      window.history.replaceState({}, "", "/");
+      window.history.replaceState(
+        { ...(window.history.state || {}), [PAGE_HISTORY_KEY]: "auth" },
+        "",
+        "/",
+      );
     }
 
     setAuthMode(mode);
-    setActivePage("auth");
   }
 
   function navigateTo(page) {
@@ -124,14 +166,12 @@ function App() {
       }
 
       if (!user.is_admin) {
-        setActivePage("dashboard");
-        setSidebarOpen(false);
+        transitionToPage("dashboard");
         return;
       }
     }
 
-    setActivePage(page);
-    setSidebarOpen(false);
+    transitionToPage(page);
   }
 
   async function openProtectedShopMap(priceId) {
@@ -168,15 +208,14 @@ function App() {
   async function handleAuthSuccess(authenticatedUser) {
     setUser(authenticatedUser);
 
-    if (resetRoute) {
-      window.history.replaceState({}, "", "/");
-    }
-
     const pendingMapId = sessionStorage.getItem("pendingMapPriceId");
     sessionStorage.removeItem("pendingMapPriceId");
 
     if (pendingMapId) {
-      setActivePage("prices");
+      transitionToPage("prices", {
+        replace: true,
+        url: resetRoute ? "/" : undefined,
+      });
       await openProtectedShopMap(pendingMapId);
       return;
     }
@@ -188,7 +227,10 @@ function App() {
       nextPage = "dashboard";
     }
 
-    setActivePage(nextPage);
+    transitionToPage(nextPage, {
+      replace: true,
+      url: resetRoute ? "/" : undefined,
+    });
   }
 
   async function handleLogout() {
@@ -203,7 +245,7 @@ function App() {
     } finally {
       setUser(null);
       setMapDestination(null);
-      setActivePage("dashboard");
+      transitionToPage("dashboard", { replace: true });
     }
   }
 
@@ -218,11 +260,10 @@ function App() {
         onModeChange={changeAuthMode}
         onSuccess={handleAuthSuccess}
         onBack={() => {
-          if (resetRoute) {
-            window.history.replaceState({}, "", "/");
-          }
-
-          setActivePage("dashboard");
+          transitionToPage("dashboard", {
+            replace: true,
+            url: resetRoute ? "/" : undefined,
+          });
         }}
         resetUid={resetRoute?.uid}
         resetToken={resetRoute?.token}
@@ -231,7 +272,7 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="app-loading">Loading</div>;
+    return <div className="app-loading">Apna Bazaar load ho raha hai…</div>;
   }
 
   return (
@@ -239,22 +280,11 @@ function App() {
       <Sidebar
         activePage={activePage}
         onNavigate={navigateTo}
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
         isAdmin={Boolean(user?.is_admin)}
       />
 
       <main className="app-main">
         <header className="app-topbar">
-          <button
-            className="menu-toggle"
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open navigation"
-          >
-            ☰
-          </button>
-
           <div className="topbar-page-name">
             {pageTitles[activePage] || "Apna Bazaar"}
           </div>
@@ -308,10 +338,10 @@ function App() {
         </div>
 
         <MobileNav
-  activePage={activePage}
-  onNavigate={navigateTo}
-  isAdmin={Boolean(user?.is_admin)}
-/>
+          activePage={activePage}
+          onNavigate={navigateTo}
+          isAdmin={Boolean(user?.is_admin)}
+        />
 
         {mapDestination && (
           <div
