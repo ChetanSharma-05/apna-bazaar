@@ -117,7 +117,7 @@ function App() {
         });
 
         if (!response.ok) {
-          throw new Error("Prices load nahi ho paaye.");
+          throw new Error("Prices could not be loaded.");
         }
 
         const data = await response.json();
@@ -191,7 +191,7 @@ function App() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Shop location load nahi hui.");
+        throw new Error(result.error || "Shop location could not be loaded.");
       }
 
       const { latitude, longitude, shop_name } = result;
@@ -272,7 +272,7 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="app-loading">Apna Bazaar load ho raha hai…</div>;
+    return <div className="app-loading">Loading Apna Bazaar…</div>;
   }
 
   return (
