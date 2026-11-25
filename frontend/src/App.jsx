@@ -195,9 +195,7 @@ function App() {
       }
 
       const { latitude, longitude, shop_name } = result;
-      const url =
-        `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}` +
-        `#map=17/${latitude}/${longitude}`;
+      const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
 
       setMapDestination({ shopName: shop_name, url });
     } catch (error) {

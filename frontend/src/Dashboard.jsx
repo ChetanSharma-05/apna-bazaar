@@ -51,7 +51,7 @@ function getMapUrl(price) {
   const latitude = Number(price.latitude);
   const longitude = Number(price.longitude);
 
-  return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
+  return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
 }
 
 function Dashboard({ prices = [], onNavigate }) {
