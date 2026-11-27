@@ -1,5 +1,11 @@
 from decimal import Decimal, InvalidOperation
+from hashlib import sha256
+import json
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
@@ -40,6 +46,65 @@ def csrf_token(request):
 
 def health(request):
     return JsonResponse({"status": "ok"})
+
+
+def location_search(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+    query = request.GET.get("q", "").strip()
+    if len(query) < 3 or len(query) > 120:
+        return JsonResponse(
+            {"error": "Enter a location with 3 to 120 characters."},
+            status=400,
+        )
+
+    cache_key = "location-search:" + sha256(query.casefold().encode("utf-8")).hexdigest()
+    cached_locations = cache.get(cache_key)
+    if cached_locations is not None:
+        return JsonResponse({"locations": cached_locations})
+
+    # Public Nominatim must not receive more than one request per second.
+    if not cache.add("nominatim-search-throttle", True, timeout=1.1):
+        return JsonResponse(
+            {"error": "Please wait a moment before searching again."},
+            status=429,
+        )
+
+    params = urlencode({
+        "q": query,
+        "format": "jsonv2",
+        "limit": 5,
+        "addressdetails": 1,
+    })
+    req = Request(
+        f"https://nominatim.openstreetmap.org/search?{params}",
+        headers={
+            "User-Agent": "ApnaBazaar/1.0 (user-triggered location search)",
+            "Accept": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(req, timeout=8) as response:
+            raw_results = json.loads(response.read().decode("utf-8"))
+    except (HTTPError, URLError, TimeoutError, ValueError, OSError):
+        return JsonResponse(
+            {"error": "Location search is temporarily unavailable. Try again."},
+            status=502,
+        )
+
+    locations = [
+        {
+            "name": result.get("display_name", ""),
+            "latitude": result.get("lat"),
+            "longitude": result.get("lon"),
+        }
+        for result in raw_results
+        if result.get("lat") and result.get("lon")
+    ]
+    cache.set(cache_key, locations, timeout=60 * 60 * 24)
+    return JsonResponse({"locations": locations})
 
 
 def price_list(request):

@@ -49,6 +49,9 @@ function MarketPrices({
   const [nearbyOnly, setNearbyOnly] = useState(Boolean(location));
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationResults, setLocationResults] = useState([]);
+  const [searchingLocation, setSearchingLocation] = useState(false);
 
   useEffect(() => {
     if (location) setNearbyOnly(true);
@@ -68,6 +71,7 @@ function MarketPrices({
         onLocationChange?.({
           latitude: coords.latitude,
           longitude: coords.longitude,
+          label: "Your current location",
         });
         setNearbyOnly(true);
         setLocating(false);
@@ -82,6 +86,52 @@ function MarketPrices({
       },
       { enableHighAccuracy: true, timeout: 12000 },
     );
+  }
+
+  async function searchForLocation(event) {
+    event.preventDefault();
+    setLocationError("");
+    setLocationResults([]);
+
+    const query = locationQuery.trim();
+    if (query.length < 3) {
+      setLocationError("Enter at least 3 characters to search for a location.");
+      return;
+    }
+
+    setSearchingLocation(true);
+    try {
+      const params = new URLSearchParams({ q: query });
+      const response = await fetch(`/api/locations/search/?${params}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Location search is unavailable.");
+      }
+
+      if (!data.locations?.length) {
+        setLocationError("No matching places found. Try a nearby area or city.");
+        return;
+      }
+
+      setLocationResults(data.locations);
+    } catch (error) {
+      setLocationError(error.message || "Could not search for that location.");
+    } finally {
+      setSearchingLocation(false);
+    }
+  }
+
+  function chooseSearchLocation(result) {
+    onLocationChange?.({
+      latitude: Number(result.latitude),
+      longitude: Number(result.longitude),
+      label: result.name.split(",").slice(0, 2).join(","),
+    });
+    setLocationQuery(result.name.split(",").slice(0, 2).join(","));
+    setLocationResults([]);
+    setLocationError("");
+    setNearbyOnly(true);
   }
 
   const visiblePrices = useMemo(() => {
@@ -159,7 +209,11 @@ function MarketPrices({
 
         <section className="nearby-toolbar" aria-label="Nearby shop filter">
           <div className="nearby-copy">
-            <strong>{nearbyOnly && location ? "Showing shops near you" : "Find shops near you"}</strong>
+            <strong>
+              {nearbyOnly && location
+                ? `Showing shops near ${location.label || "you"}`
+                : "Find shops near you"}
+            </strong>
             <small>
               {nearbyOnly && location
                 ? `Within ${radiusKm} km of your current location`
@@ -168,22 +222,22 @@ function MarketPrices({
           </div>
 
           {location && (
-            <div className="nearby-radius" aria-label="Nearby search radius">
-              {[5, 8].map((radius) => (
-                <button
-                  key={radius}
-                  type="button"
-                  className={radiusKm === radius ? "selected" : ""}
-                  onClick={() => {
-                    setRadiusKm(radius);
-                    setNearbyOnly(true);
-                  }}
-                  aria-pressed={radiusKm === radius}
-                >
-                  {radius} km
-                </button>
-              ))}
-            </div>
+            <label className="nearby-radius-control">
+              <span>Radius</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={radiusKm}
+                onChange={(event) => {
+                  setRadiusKm(Number(event.target.value));
+                  setNearbyOnly(true);
+                }}
+                aria-label="Search radius in kilometres"
+              />
+              <strong>{radiusKm} km</strong>
+            </label>
           )}
 
           <button
@@ -200,7 +254,42 @@ function MarketPrices({
                   ? "Show nearby"
                   : "◎ Use my location"}
           </button>
+          <form className="nearby-search-form" onSubmit={searchForLocation}>
+            <label className="nearby-search-input">
+              <span aria-hidden="true">⌕</span>
+              <input
+                type="search"
+                value={locationQuery}
+                onChange={(event) => setLocationQuery(event.target.value)}
+                placeholder="Search an area, city, or landmark..."
+                aria-label="Search location"
+              />
+            </label>
+            <button
+              className="nearby-search-button"
+              type="submit"
+              disabled={searchingLocation}
+            >
+              {searchingLocation ? "Searching…" : "Search location"}
+            </button>
+          </form>
+          {locationResults.length > 0 && (
+            <div className="nearby-search-results" role="list" aria-label="Location search results">
+              {locationResults.map((result, index) => (
+                <button
+                  key={`${result.latitude}-${result.longitude}-${index}`}
+                  type="button"
+                  role="listitem"
+                  onClick={() => chooseSearchLocation(result)}
+                >
+                  <span aria-hidden="true">⌖</span>
+                  {result.name}
+                </button>
+              ))}
+            </div>
+          )}
           {locationError && <p className="nearby-error" role="alert">{locationError}</p>}
+          <small className="nearby-attribution">Search results © OpenStreetMap contributors</small>
         </section>
 
         <nav className="market-categories" aria-label="Filter by category">
@@ -235,14 +324,9 @@ function MarketPrices({
             <h3>{nearbyOnly && location ? `No shops found within ${radiusKm} km` : "No matching prices"}</h3>
             <p>
               {nearbyOnly && location
-                ? "Try an 8 km radius or show all prices. Shops need a saved map pin to appear nearby."
+                ? "Increase the radius or show all prices. Shops need a saved map pin to appear nearby."
                 : "Try another search or share the first price for this item."}
             </p>
-            {nearbyOnly && location && radiusKm === 5 && (
-              <button type="button" onClick={() => setRadiusKm(8)}>
-                Search within 8 km →
-              </button>
-            )}
             <button type="button" onClick={() => onNavigate("share")}>
               Share a price →
             </button>

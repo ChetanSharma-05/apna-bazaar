@@ -8,6 +8,11 @@ urlpatterns = [
     path("csrf/", views.csrf_token, name="csrf-token"),
     path("prices/", views.price_list, name="price-list"),
     path(
+        "locations/search/",
+        views.location_search,
+        name="location-search",
+    ),
+    path(
         "shops/<int:price_id>/location/",
         views.shop_location,
         name="shop-location",

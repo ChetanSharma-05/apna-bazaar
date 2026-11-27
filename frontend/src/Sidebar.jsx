@@ -37,7 +37,11 @@ function Sidebar({ activePage, onNavigate, isAdmin, onLocationChange }) {
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
         const { latitude, longitude } = coords;
-        onLocationChange?.({ latitude, longitude });
+        onLocationChange?.({
+          latitude,
+          longitude,
+          label: "Your current location",
+        });
 
         setArea(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
         setCity("Looking up nearby area…");
