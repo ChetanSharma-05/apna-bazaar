@@ -1,19 +1,99 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./MarketPrices.css";
 
 const categories = ["All items", "Vegetables", "Staples", "Dairy", "Other"];
 
-function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
+function distanceInKm(from, to) {
+  if (
+    from.latitude == null ||
+    from.longitude == null ||
+    to.latitude == null ||
+    to.longitude == null ||
+    to.latitude === "" ||
+    to.longitude === ""
+  ) {
+    return null;
+  }
+
+  const radians = (degrees) => (degrees * Math.PI) / 180;
+  const lat1 = Number(from.latitude);
+  const lon1 = Number(from.longitude);
+  const lat2 = Number(to.latitude);
+  const lon2 = Number(to.longitude);
+
+  if (![lat1, lon1, lat2, lon2].every(Number.isFinite)) return null;
+
+  const dLat = radians(lat2 - lat1);
+  const dLon = radians(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(radians(lat1)) *
+      Math.cos(radians(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function MarketPrices({
+  prices = [],
+  onNavigate,
+  onOpenMap,
+  location,
+  onLocationChange,
+}) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All items");
   const [sortBy, setSortBy] = useState("name");
   const [photoViewer, setPhotoViewer] = useState(null);
+  const [radiusKm, setRadiusKm] = useState(5);
+  const [nearbyOnly, setNearbyOnly] = useState(Boolean(location));
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+
+  useEffect(() => {
+    if (location) setNearbyOnly(true);
+  }, [location]);
+
+  function useCurrentLocation() {
+    setLocationError("");
+
+    if (!navigator.geolocation) {
+      setLocationError("Location is not supported by this browser.");
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        onLocationChange?.({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+        setNearbyOnly(true);
+        setLocating(false);
+      },
+      (error) => {
+        setLocationError(
+          error.code === error.PERMISSION_DENIED
+            ? "Allow location access in your browser, then try again."
+            : "Could not get your location. Please try again.",
+        );
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 12000 },
+    );
+  }
 
   const visiblePrices = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return [...prices]
       .filter((price) => {
+        if (nearbyOnly && location) {
+          const distance = distanceInKm(location, price);
+          if (distance === null || distance > radiusKm) return false;
+        }
+
         const matchesSearch =
           !query ||
           price.item_name.toLowerCase().includes(query) ||
@@ -32,7 +112,7 @@ function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
         if (sortBy === "high") return Number(b.price) - Number(a.price);
         return a.item_name.localeCompare(b.item_name);
       });
-  }, [prices, search, category, sortBy]);
+  }, [prices, search, category, sortBy, location, nearbyOnly, radiusKm]);
 
   return (
     <>
@@ -77,6 +157,52 @@ function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
           </label>
         </div>
 
+        <section className="nearby-toolbar" aria-label="Nearby shop filter">
+          <div className="nearby-copy">
+            <strong>{nearbyOnly && location ? "Showing shops near you" : "Find shops near you"}</strong>
+            <small>
+              {nearbyOnly && location
+                ? `Within ${radiusKm} km of your current location`
+                : "Use your location to find nearby items and shops"}
+            </small>
+          </div>
+
+          {location && (
+            <div className="nearby-radius" aria-label="Nearby search radius">
+              {[5, 8].map((radius) => (
+                <button
+                  key={radius}
+                  type="button"
+                  className={radiusKm === radius ? "selected" : ""}
+                  onClick={() => {
+                    setRadiusKm(radius);
+                    setNearbyOnly(true);
+                  }}
+                  aria-pressed={radiusKm === radius}
+                >
+                  {radius} km
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            className="nearby-location-button"
+            type="button"
+            onClick={location && nearbyOnly ? () => setNearbyOnly(false) : useCurrentLocation}
+            disabled={locating}
+          >
+            {locating
+              ? "Finding location…"
+              : location && nearbyOnly
+                ? "Show all prices"
+                : location
+                  ? "Show nearby"
+                  : "◎ Use my location"}
+          </button>
+          {locationError && <p className="nearby-error" role="alert">{locationError}</p>}
+        </section>
+
         <nav className="market-categories" aria-label="Filter by category">
           {categories.map((name) => (
             <button
@@ -96,7 +222,7 @@ function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
         </nav>
 
         <div className="market-results-heading">
-          <h2>Prices near you</h2>
+          <h2>{nearbyOnly && location ? `Prices within ${radiusKm} km` : "Prices near you"}</h2>
           <span>
             {visiblePrices.length}{" "}
             {visiblePrices.length === 1 ? "price" : "prices"}
@@ -106,8 +232,17 @@ function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
         {visiblePrices.length === 0 ? (
           <div className="market-empty">
             <span>🥬</span>
-            <h3>No matching prices</h3>
-            <p>Try another search or share the first price for this item.</p>
+            <h3>{nearbyOnly && location ? `No shops found within ${radiusKm} km` : "No matching prices"}</h3>
+            <p>
+              {nearbyOnly && location
+                ? "Try an 8 km radius or show all prices. Shops need a saved map pin to appear nearby."
+                : "Try another search or share the first price for this item."}
+            </p>
+            {nearbyOnly && location && radiusKm === 5 && (
+              <button type="button" onClick={() => setRadiusKm(8)}>
+                Search within 8 km →
+              </button>
+            )}
             <button type="button" onClick={() => onNavigate("share")}>
               Share a price →
             </button>
@@ -182,7 +317,12 @@ function MarketPrices({ prices = [], onNavigate, onOpenMap }) {
                 </div>
 
                 <div className="market-card-footer">
-                  <span>{price.area}</span>
+                  <span>
+                    {price.area}
+                    {nearbyOnly && location
+                      ? ` · ${distanceInKm(location, price)?.toFixed(1)} km away`
+                      : ""}
+                  </span>
                   <button
                     className="market-map-link"
                     type="button"

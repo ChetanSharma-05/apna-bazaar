@@ -97,6 +97,8 @@ def price_list(request):
                 "area": entry.area,
                 "date": entry.date.isoformat(),
                 "created_at": entry.created_at.isoformat(),
+                "latitude": str(entry.latitude) if entry.latitude is not None else None,
+                "longitude": str(entry.longitude) if entry.longitude is not None else None,
                 "product_image": entry.product_image.url if entry.product_image else None,
                 "shop_image": entry.shop_image.url if entry.shop_image else None,
             })

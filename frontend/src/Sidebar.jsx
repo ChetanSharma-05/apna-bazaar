@@ -14,7 +14,7 @@ const adminPage = {
   label: "Admin dashboard",
 };
 
-function Sidebar({ activePage, onNavigate, isAdmin }) {
+function Sidebar({ activePage, onNavigate, isAdmin, onLocationChange }) {
   const [area, setArea] = useState("Use my location");
   const [city, setCity] = useState("Tap to find your area");
   const [locating, setLocating] = useState(false);
@@ -37,6 +37,7 @@ function Sidebar({ activePage, onNavigate, isAdmin }) {
     navigator.geolocation.getCurrentPosition(
       async ({ coords }) => {
         const { latitude, longitude } = coords;
+        onLocationChange?.({ latitude, longitude });
 
         setArea(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
         setCity("Looking up nearby area…");

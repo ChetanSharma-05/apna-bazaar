@@ -196,3 +196,4 @@ function Dashboard({ prices = [], onNavigate }) {
 }
 
 export default Dashboard;
+ 

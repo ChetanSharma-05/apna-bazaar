@@ -40,6 +40,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [mapDestination, setMapDestination] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
     const currentState = window.history.state || {};
@@ -279,6 +280,7 @@ function App() {
         activePage={activePage}
         onNavigate={navigateTo}
         isAdmin={Boolean(user?.is_admin)}
+        onLocationChange={setUserLocation}
       />
 
       <main className="app-main">
@@ -318,6 +320,8 @@ function App() {
               prices={prices}
               onNavigate={navigateTo}
               onOpenMap={openProtectedShopMap}
+              location={userLocation}
+              onLocationChange={setUserLocation}
             />
           )}
 
